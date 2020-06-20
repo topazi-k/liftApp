@@ -51,26 +51,18 @@ public class Lift {
             sortedPassengers.sort(comparator);
         }
     }
+    
+    public void removePassenger(Passenger passenger) {
+        sortedPassengers.remove(passenger);
+    }
 
-    public int getNextFloorNumber() {
+    public int getNextDestination() {
         if (currentDirection == LiftDirection.UP) {
             return sortedPassengers.get(0).getDestination();
         }
         return sortedPassengers.get(sortedPassengers.size() - 1).getDestination();
     }
 
-    public List<Passenger> getPassengersOut() {
-        List<Passenger> droppedPassengers = new ArrayList<>();
-        for (Passenger passenger : getPassengers()) {
-            if (passenger.getDestination() == currentFloor) {
-                droppedPassengers.add(passenger);
-            }
-        }
-        for (Passenger passenger : droppedPassengers) {
-            getPassengers().remove(passenger);
-        }
-        return droppedPassengers;
-    }
 
     public LiftDirection getDirection() {
         return currentDirection;

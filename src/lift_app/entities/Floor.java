@@ -10,47 +10,41 @@ public class Floor {
     private List<Passenger> passengersUp = new ArrayList<>();
     private List<Passenger> passengersDown = new ArrayList<>();
 
-    public List<Passenger> getPassengersUpDirection() {
-        return passengersUp;
-    }
-
-//   public List<Passenger> getMostPassengers() {
- //        return (passengersUp.size() > passengersDown.size()) ? passengersUp : passengersDown;
- //   }
-
-    public List<Passenger> getPassengersDownDirection() {
-        return passengersDown;
-    }
-    
-    public List<Passenger> getPassengersInDirection(LiftDirection direction) {
-        if(direction==LiftDirection.UP) {
-            return passengersUp;
-        }
-        return passengersDown;
-    }
-    
-    public boolean hasPassengersInDirection(LiftDirection direction) {
-        if(direction==LiftDirection.UP) {
-            return !(passengersUp.isEmpty());
-        }
-        return !(passengersDown.isEmpty());
-    }
-    
-    public boolean isEmpty() {
-        return (passengersUp.isEmpty() && passengersDown.isEmpty()) ? true : false;
-    }
-
     public int getNumber() {
         return floorNumber;
     }
-    
-    
+
     public void setNumber(int floorNumber) {
         this.floorNumber = floorNumber;
     }
 
-   
-    public void removePassengerInDirection(Passenger passenger) {
+    public List<Passenger> getPassengersUpDirection() {
+        return passengersUp;
+    }
+
+    public List<Passenger> getPassengersDownDirection() {
+        return passengersDown;
+    }
+
+    public List<Passenger> getPassengersInDirection(LiftDirection direction) {
+        if (direction == LiftDirection.UP) {
+            return passengersUp;
+        }
+        return passengersDown;
+    }
+
+    public boolean hasPassengersInDirection(LiftDirection direction) {
+        if (direction == LiftDirection.UP) {
+            return !(passengersUp.isEmpty());
+        }
+        return !(passengersDown.isEmpty());
+    }
+
+    public boolean isEmpty() {
+        return (passengersUp.isEmpty() && passengersDown.isEmpty()) ? true : false;
+    }
+
+    public void removePassenger(Passenger passenger) {
         if (passenger.getDestination() > floorNumber) {
             passengersUp.remove(passenger);
             return;

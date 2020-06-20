@@ -41,8 +41,7 @@ public class StartDataGenerator {
 
     private List<Passenger> generatePassengerOnFloor(Floor floor, int numberOfFloors) {
         List<Passenger> passengers = new ArrayList<>();
-        int numberOfPassengers = random.nextInt(Constants.MAX_PASSENGERS_ON_FLOOR + 1);
-       // if(floor.getNumber()==1) {return passengers;}///temp for test
+        int numberOfPassengers = random.nextInt(Constants.MAX_PASS_ON_FLOOR_ON_START + 1);
         for (int i = 0; i < numberOfPassengers; i++) {
             Passenger passenger = new Passenger();
             int destination;

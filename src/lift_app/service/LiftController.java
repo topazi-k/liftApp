@@ -15,11 +15,10 @@ public class LiftController {
 
     private int stepsCounter = 0;
     private BuildingState building;
-    Lift lift;
+    private Lift lift;
+    private Floor currentFloor;
 
-    Floor currentFloor;
-    Floor nextFloor;
-    Random random = new Random();
+    private Random random = new Random();
 
     public LiftController(BuildingState building) {
         this.building = building;
@@ -38,25 +37,67 @@ public class LiftController {
             currentFloor = building.getFloorByNumber(findNextFloor());
         }
         lift.setCurrentFloor(currentFloor.getNumber());
-        List<Passenger> passengersThatOut = lift.getPassengersOut();
-        if (!currentFloor.isEmpty()) {
-            getPassengersIn();
-        }
-        createNewDestination(passengersThatOut);
-        currentFloor.setPassengers(passengersThatOut);
+
+        List<Passenger> passengersFromLift = takePassengersOutOfLift();
+        building.setNumberGonesFromLift(passengersFromLift.size());
+        takePassengersToLift();
+        createNewDestination(passengersFromLift);
+        currentFloor.setPassengers(passengersFromLift);
     }
 
     private int findNextFloor() {
         if (lift.isEmpty()) {
-            nextFloor = findNextFloorForEmptyLift();
-            return nextFloor.getNumber();
+            return findFloorForEmptyLift().getNumber();
         }
-        int nextFloorInsideLift = lift.getNextFloorNumber();
+        int nearestDestinationInLift = lift.getNextDestination();
         if (lift.getPassengers().size() == Constants.MAX_PASSANGERS_LIFT) {
-            return nextFloorInsideLift;
+            return nearestDestinationInLift;
         }
-        int travelCompanionFloor = findFloorWithTravelCompanions(lift.getCurrentFloor());
-        return chooseTheNearest(nextFloorInsideLift, travelCompanionFloor);
+        int nearestPassengerOutside = findNearestByPassengersDirection(lift.getCurrentFloor());
+        return chooseTheNearest(nearestDestinationInLift, nearestPassengerOutside);
+    }
+
+    private Floor findFloorForEmptyLift() {
+        Floor floorInDirection = findNearestNonEmptyByDirection(currentFloor.getNumber());
+        if (floorInDirection == null) {
+            lift.changeDirection();
+            floorInDirection = findNearestNonEmptyByDirection(currentFloor.getNumber());
+        }
+        return floorInDirection;
+    }
+
+    public Floor findNearestNonEmptyByDirection(int currentFloor) {
+        int next = getNextNumberInDirection(currentFloor);
+        while (next != Constants.NON_EXISTING_FLOOR) {
+            Floor nextFloor = building.getFloorByNumber(next);
+            if (nextFloor.isEmpty()) {
+                next = getNextNumberInDirection(next);
+                continue;
+            } else {
+                return nextFloor;
+            }
+        }
+        return null;
+    }
+
+    private int findNearestByPassengersDirection(int currentFloor) {
+        int next = getNextNumberInDirection(currentFloor);
+        while (next != Constants.NON_EXISTING_FLOOR) {
+            Floor nextFloor = building.getFloorByNumber(next);
+            if (nextFloor.hasPassengersInDirection(lift.getDirection())) {
+                return next;
+            }
+            next = getNextNumberInDirection(next);
+        }
+        return 0;
+    }
+
+    private int getNextNumberInDirection(int currentFloor) {
+        int nexNumberInDirection = (lift.getDirection() == LiftDirection.UP) ? ++currentFloor : --currentFloor;
+        if (building.isFloorExist(nexNumberInDirection)) {
+            return nexNumberInDirection;
+        }
+        return Constants.NON_EXISTING_FLOOR;
     }
 
     public int chooseTheNearest(int nextFloorInsideLift, int travelCompanionFloor) {
@@ -70,48 +111,24 @@ public class LiftController {
         return travelCompanionFloor;
     }
 
-    private Floor findNextFloorForEmptyLift() {
-        Floor nonEmptyFloor = checkFloorsInCurrentDirection();
-        if (nonEmptyFloor == null) {
-            lift.changeDirection();
-            nonEmptyFloor = checkFloorsInCurrentDirection();
-        }
-        return nonEmptyFloor;
-    }
-
-    public Floor checkFloorsInCurrentDirection() {
-        Floor nextFloor = null;
-        int nextFloorN = currentFloor.getNumber();
-        do {
-            nextFloorN = getNextNumberInDirection(nextFloorN);
-            if (building.isFloorExist(nextFloorN)) {
-                nextFloor = building.getFloorByNumber(nextFloorN);
-            } else {
-                return nextFloor;
+    public List<Passenger> takePassengersOutOfLift() {
+        List<Passenger> droppedPassengers = new ArrayList<>();
+        for (Passenger passenger : lift.getPassengers()) {
+            if (passenger.getDestination() == currentFloor.getNumber()) {
+                droppedPassengers.add(passenger);
             }
-        } while (nextFloor.isEmpty());
-        return nextFloor;
-    }
-
-    private int getNextNumberInDirection(int currentFloor) {
-        return (lift.getDirection() == LiftDirection.UP) ? ++currentFloor : --currentFloor;
-    }
-
-    private int findFloorWithTravelCompanions(int currentFloor) {
-        int nextFloorNumber = getNextNumberInDirection(currentFloor);
-        while (building.isFloorExist(nextFloorNumber)) {
-            Floor nextFloor = building.getFloorByNumber(nextFloorNumber);
-            if (nextFloor.hasPassengersInDirection(lift.getDirection())) {
-                return nextFloorNumber;
-            }
-            nextFloorNumber++;
         }
-        return 0;
+        for (Passenger passenger : droppedPassengers) {
+            lift.removePassenger(passenger);
+        }
+        return droppedPassengers;
     }
 
-    private List<Passenger> getPassengersIn() {
-
-        if (lift.isEmpty() && (!currentFloor.getAllPassengers().isEmpty()) && (!hasPassInCurrDirect())) {
+    private void takePassengersToLift() {
+        if (currentFloor.isEmpty()) {
+            return;
+        }
+        if (lift.isEmpty() && (!currentFloor.hasPassengersInDirection(lift.getDirection()))) {
             lift.changeDirection();
         }
         List<Passenger> passengersOnFloor = currentFloor.getPassengersInDirection(lift.getDirection());
@@ -124,9 +141,8 @@ public class LiftController {
             passengersThatIn.add(passenger);
         }
         for (Passenger p : passengersThatIn) {
-            currentFloor.removePassengerInDirection(p);
+            currentFloor.removePassenger(p);
         }
-        return passengersThatIn;
     }
 
     private List<Passenger> createNewDestination(List<Passenger> passengers) {
@@ -140,12 +156,7 @@ public class LiftController {
         return passengers;
     }
 
-    private boolean hasPassInCurrDirect() {
-        if (lift.getDirection() == LiftDirection.UP) {
-            return !(currentFloor.getPassengersUpDirection().isEmpty());
-        }
-        return !(currentFloor.getPassengersDownDirection().isEmpty());
-    }
+   
 
     private int generateFloorNumber() {
         return random.nextInt(building.getNumberOfFloors()) + 1;
