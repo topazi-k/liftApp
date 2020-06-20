@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import lift_app.entities.Building;
+import lift_app.entities.BuildingState;
 import lift_app.entities.Constants;
 import lift_app.entities.Floor;
 import lift_app.entities.Lift;
@@ -14,14 +14,14 @@ import lift_app.entities.Passenger;
 public class LiftController {
 
     private int stepsCounter = 0;
-    private Building building;
+    private BuildingState building;
     Lift lift;
 
     Floor currentFloor;
     Floor nextFloor;
     Random random = new Random();
 
-    public LiftController(Building building) {
+    public LiftController(BuildingState building) {
         this.building = building;
     }
 
@@ -33,6 +33,7 @@ public class LiftController {
 
     public void nextStep() {
         stepsCounter++;
+        building.setCurrentStep(stepsCounter);
         if (stepsCounter != 1) {
             currentFloor = building.getFloorByNumber(findNextFloor());
         }

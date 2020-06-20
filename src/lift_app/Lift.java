@@ -1,18 +1,16 @@
 package lift_app;
 
-import lift_app.entities.Building;
-import lift_app.entities.Floor;
-import lift_app.entities.Passenger;
-import lift_app.service.BUildFormatter;
+import lift_app.entities.BuildingState;
 import lift_app.service.LiftController;
 import lift_app.service.StartDataGenerator;
+import lift_app.service.StringFormatter;
 
 public class Lift {
 
     public static void main(String[] args) {
         StartDataGenerator dg = new StartDataGenerator();
 
-        Building b = dg.generateStartData();
+        BuildingState b = dg.generateStartData();
 
         //System.out.println("all floors" + b.getFloors().length + " :  \n\n");
 
@@ -31,12 +29,12 @@ public class Lift {
         
         LiftController controller=new LiftController(b);
         controller.init();
-        BUildFormatter bf=new BUildFormatter(b);
-        System.out.println(bf.createStiring());
+        StringFormatter bf=new StringFormatter();
+        System.out.println(bf.formatData(b));
         int i=0;
         while(i<15) {
             controller.nextStep();
-            System.out.println(bf.createStiring());
+            System.out.println(bf.formatData(b));
             i++;
         }
     }

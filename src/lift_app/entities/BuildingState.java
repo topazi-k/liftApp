@@ -1,16 +1,27 @@
 package lift_app.entities;
 
-public class Building {
+public class BuildingState {
 
     private Floor[] floors;
     private Lift lift;
     
+    private int currentStep;
     
-    
-    public Building() {
+    public BuildingState() {
 
     }
     
+    
+    public int getCurrentStep() {
+        return currentStep;
+    }
+
+
+    public void setCurrentStep(int currentStep) {
+        this.currentStep = currentStep;
+    }
+
+
     public int getNumberOfFloors() {
         return floors.length;
     }

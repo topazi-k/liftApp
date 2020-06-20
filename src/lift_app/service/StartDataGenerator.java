@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import lift_app.entities.Building;
+import lift_app.entities.BuildingState;
 import lift_app.entities.Constants;
 import lift_app.entities.Floor;
 import lift_app.entities.Lift;
@@ -14,9 +14,9 @@ import lift_app.entities.Lift.LiftDirection;
 public class StartDataGenerator {
     Random random = new Random();
 
-    public Building generateStartData() {
+    public BuildingState generateStartData() {
 
-        Building building = new Building();
+        BuildingState building = new BuildingState();
         Floor[] floors = createFloors();
         for (Floor floor : floors) {
             floor.setPassengers(generatePassengerOnFloor(floor, floors.length));
@@ -42,7 +42,7 @@ public class StartDataGenerator {
     private List<Passenger> generatePassengerOnFloor(Floor floor, int numberOfFloors) {
         List<Passenger> passengers = new ArrayList<>();
         int numberOfPassengers = random.nextInt(Constants.MAX_PASSENGERS_ON_FLOOR + 1);
-        if(floor.getNumber()==1) {return passengers;}///temp for test
+       // if(floor.getNumber()==1) {return passengers;}///temp for test
         for (int i = 0; i < numberOfPassengers; i++) {
             Passenger passenger = new Passenger();
             int destination;
