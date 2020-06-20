@@ -53,43 +53,34 @@ public class LiftController {
         if (lift.getPassengers().size() == Constants.MAX_PASSANGERS_LIFT) {
             return nearestDestinationInLift;
         }
-        int nearestPassengerOutside = findNearestByPassengersDirection(lift.getCurrentFloor());
-        return chooseTheNearest(nearestDestinationInLift, nearestPassengerOutside);
+        int nextFloor = findFloorWithPass(floor -> !floor.hasPassengersInDirection(lift.getDirection()));
+        return chooseTheNearest(nearestDestinationInLift, nextFloor);
     }
 
     private Floor findFloorForEmptyLift() {
-        Floor floorInDirection = findNearestNonEmptyByDirection(currentFloor.getNumber());
-        if (floorInDirection == null) {
+        int floorNumber = findFloorWithPass(floor -> floor.isEmpty());
+        if (floorNumber == Constants.NON_EXISTING_FLOOR) {
             lift.changeDirection();
-            floorInDirection = findNearestNonEmptyByDirection(currentFloor.getNumber());
+            floorNumber = findFloorWithPass(floor -> floor.isEmpty());
         }
-        return floorInDirection;
+        if (floorNumber == Constants.NON_EXISTING_FLOOR) {
+            return currentFloor;
+        }
+        return building.getFloorByNumber(floorNumber);
     }
 
-    public Floor findNearestNonEmptyByDirection(int currentFloor) {
-        int next = getNextNumberInDirection(currentFloor);
+    private int findFloorWithPass(FloorChecker checker) {
+        int next = getNextNumberInDirection(currentFloor.getNumber());
         while (next != Constants.NON_EXISTING_FLOOR) {
             Floor nextFloor = building.getFloorByNumber(next);
-            if (nextFloor.isEmpty()) {
+            if (checker.isEmpty(nextFloor)) {
                 next = getNextNumberInDirection(next);
                 continue;
             } else {
-                return nextFloor;
-            }
-        }
-        return null;
-    }
-
-    private int findNearestByPassengersDirection(int currentFloor) {
-        int next = getNextNumberInDirection(currentFloor);
-        while (next != Constants.NON_EXISTING_FLOOR) {
-            Floor nextFloor = building.getFloorByNumber(next);
-            if (nextFloor.hasPassengersInDirection(lift.getDirection())) {
                 return next;
             }
-            next = getNextNumberInDirection(next);
         }
-        return 0;
+        return Constants.NON_EXISTING_FLOOR;
     }
 
     private int getNextNumberInDirection(int currentFloor) {
@@ -156,9 +147,8 @@ public class LiftController {
         return passengers;
     }
 
-   
-
     private int generateFloorNumber() {
         return random.nextInt(building.getNumberOfFloors()) + 1;
     }
+
 }
