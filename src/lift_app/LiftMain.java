@@ -1,27 +1,24 @@
 package lift_app;
 
 import lift_app.entities.BuildingState;
+import lift_app.entities.Constants;
+import lift_app.service.DataGenerator;
 import lift_app.service.LiftController;
-import lift_app.service.StartDataGenerator;
 import lift_app.service.StringFormatter;
 
 public class LiftMain {
 
     public static void main(String[] args) {
-        StartDataGenerator dg = new StartDataGenerator();
 
-        BuildingState b = dg.generateStartData();
-
-        LiftController controller=new LiftController(b);
+        DataGenerator dataGenerator = new DataGenerator();
+        BuildingState building = dataGenerator.generateStartData();
+        StringFormatter formatter =new StringFormatter();
+        LiftController controller = new LiftController(building);
         controller.init();
-        StringFormatter bf=new StringFormatter();
-        System.out.println(bf.formatData(b));
-        int i=0;
-        while(i<15) {
-            controller.nextStep();
-            System.out.println(bf.formatData(b));
-            i++;
+
+        for (int i = 0; i < Constants.DEFAULT_NUMBER_OF_STEPS; i++) {
+            System.out.println(formatter.formatData(controller.nextStep()));
+
         }
     }
-
 }

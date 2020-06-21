@@ -14,7 +14,10 @@ public class BuildingState {
     public void setNumberGonesFromLift(int numberGonesFromLift) {
         this.numberGonesFromLift = numberGonesFromLift;
     }
-
+    
+    public void incrementStep() {
+        currentStep++;
+    }
     public int getCurrentStep() {
         return currentStep;
     }

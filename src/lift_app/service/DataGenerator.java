@@ -8,10 +8,10 @@ import lift_app.entities.BuildingState;
 import lift_app.entities.Constants;
 import lift_app.entities.Floor;
 import lift_app.entities.Lift;
+import lift_app.entities.Lift.Direction;
 import lift_app.entities.Passenger;
-import lift_app.entities.Lift.LiftDirection;
 
-public class StartDataGenerator {
+public class DataGenerator {
     Random random = new Random();
 
     public BuildingState generateStartData() {
@@ -23,7 +23,7 @@ public class StartDataGenerator {
         }
         building.setFloors(floors);
         Lift lift = new Lift(building.getNumberOfFloors());
-        lift.setDirection(LiftDirection.UP);
+        lift.setDirection(Direction.UP);
         building.setLift(lift);
         return building;
     }
@@ -32,8 +32,7 @@ public class StartDataGenerator {
         int numberOfFloors = generateRandomInRange(Constants.MIN_FLOORS, Constants.MAX_FLOORS);
         Floor[] floors = new Floor[numberOfFloors];
         for (int i = 0; i < numberOfFloors; i++) {
-            Floor floor = new Floor();
-            floor.setNumber(i + 1);
+            Floor floor = new Floor(i+1);
             floors[i] = floor;
         }
         return floors;

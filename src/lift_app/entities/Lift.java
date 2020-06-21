@@ -8,7 +8,7 @@ import lift_app.service.PassengerComparator;
 public class Lift {
 
     private List<Passenger> sortedPassengers = new ArrayList<>();
-    private LiftDirection currentDirection;
+    private Direction currentDirection=Direction.UP;
     private int currentFloor;
     private int numberOfFloors;
 
@@ -17,9 +17,11 @@ public class Lift {
         this.currentFloor = Constants.FIRST_FLOOR;
     }
 
+    
+    
     private PassengerComparator comparator = new PassengerComparator();
 
-    public enum LiftDirection {
+    public enum Direction {
         UP, DOWN
     };
 
@@ -57,18 +59,18 @@ public class Lift {
     }
 
     public int getNextDestination() {
-        if (currentDirection == LiftDirection.UP) {
+        if (currentDirection == Direction.UP) {
             return sortedPassengers.get(0).getDestination();
         }
         return sortedPassengers.get(sortedPassengers.size() - 1).getDestination();
     }
 
 
-    public LiftDirection getDirection() {
+    public Direction getDirection() {
         return currentDirection;
     }
 
-    public void setDirection(LiftDirection direction) {
+    public void setDirection(Direction direction) {
         this.currentDirection = direction;
     }
 
@@ -79,21 +81,18 @@ public class Lift {
     public void setCurrentFloor(int currentFloor) {
         this.currentFloor = currentFloor;
         if (currentFloor == numberOfFloors) {
-            setDirection(LiftDirection.DOWN);
+            setDirection(Direction.DOWN);
 
         } else if (currentFloor == 1) {
-            setDirection(LiftDirection.UP);
-
+            setDirection(Direction.UP);
         }
-
     }
 
     public void changeDirection() {
-        if (currentDirection == LiftDirection.UP) {
-            currentDirection = LiftDirection.DOWN;
+        if (currentDirection == Direction.UP) {
+            currentDirection = Direction.DOWN;
         } else {
-            currentDirection = LiftDirection.DOWN;
+            currentDirection = Direction.DOWN;
         }
     }
-
 }

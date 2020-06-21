@@ -5,7 +5,7 @@ import java.util.Formatter;
 import lift_app.entities.BuildingState;
 import lift_app.entities.Floor;
 import lift_app.entities.Lift;
-import lift_app.entities.Lift.LiftDirection;
+import lift_app.entities.Lift.Direction;
 import lift_app.entities.Passenger;
 
 public class StringFormatter {
@@ -48,8 +48,8 @@ public class StringFormatter {
         return buildingState.toString();
     }
 
-    private String getDirectionSign(LiftDirection direction) {
-        if (direction == LiftDirection.UP) {
+    private String getDirectionSign(Direction direction) {
+        if (direction == Direction.UP) {
             return "^";
         }
         return "v";

@@ -8,32 +8,32 @@ import lift_app.entities.BuildingState;
 import lift_app.entities.Constants;
 import lift_app.entities.Floor;
 import lift_app.entities.Lift;
-import lift_app.entities.Lift.LiftDirection;
+import lift_app.entities.Lift.Direction;
 import lift_app.entities.Passenger;
 
 public class LiftController {
 
-    private int stepsCounter = 0;
+   
     private BuildingState building;
     private Lift lift;
     private Floor currentFloor;
 
     private Random random = new Random();
-
+    
+    
     public LiftController(BuildingState building) {
         this.building = building;
     }
-
+    
     public void init() {
         lift = building.getLift();
-        currentFloor = building.getFloorByNumber(lift.getCurrentFloor());
 
     };
 
-    public void nextStep() {
-        stepsCounter++;
-        building.setCurrentStep(stepsCounter);
-        if (stepsCounter != 1) {
+    public BuildingState nextStep() {
+        currentFloor = building.getFloorByNumber(lift.getCurrentFloor());  
+        building.incrementStep();
+        if (building.getCurrentStep() != 1) {
             currentFloor = building.getFloorByNumber(findNextFloor());
         }
         lift.setCurrentFloor(currentFloor.getNumber());
@@ -43,6 +43,7 @@ public class LiftController {
         takePassengersToLift();
         createNewDestination(passengersFromLift);
         currentFloor.setPassengers(passengersFromLift);
+        return building;
     }
 
     private int findNextFloor() {
@@ -84,7 +85,7 @@ public class LiftController {
     }
 
     private int getNextNumberInDirection(int currentFloor) {
-        int nexNumberInDirection = (lift.getDirection() == LiftDirection.UP) ? ++currentFloor : --currentFloor;
+        int nexNumberInDirection = (lift.getDirection() == Direction.UP) ? ++currentFloor : --currentFloor;
         if (building.isFloorExist(nexNumberInDirection)) {
             return nexNumberInDirection;
         }
@@ -94,9 +95,9 @@ public class LiftController {
     public int chooseTheNearest(int nextFloorInsideLift, int travelCompanionFloor) {
         if (travelCompanionFloor == 0) {
             return nextFloorInsideLift;
-        } else if (nextFloorInsideLift < travelCompanionFloor && lift.getDirection() == LiftDirection.UP) {
+        } else if (nextFloorInsideLift < travelCompanionFloor && lift.getDirection() == Direction.UP) {
             return nextFloorInsideLift;
-        } else if (nextFloorInsideLift > travelCompanionFloor && lift.getDirection() == LiftDirection.DOWN) {
+        } else if (nextFloorInsideLift > travelCompanionFloor && lift.getDirection() == Direction.DOWN) {
             return nextFloorInsideLift;
         }
         return travelCompanionFloor;
